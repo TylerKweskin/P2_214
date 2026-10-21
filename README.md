@@ -1,1 +1,3 @@
-# P2_214
+Aiden Jasul - Tyler Kweskin
+adj79 - tjk212
+For the directory and suffix funcitonality, there were a couple tests. Initial tests included running "./words tests/example" to ensure the program could handle individual files and implicit setting the searched suffix as .txt. Tests included running "./words -s .md tests" and "./words tests" to make sure that the program ignores certain files and checks nested directories. Another test is running "./words -s .wadwad tests" and "./words -s.wadwad tests" such that it would correctly identify uncommon length suffixes. Address Sanatizer and the VS Code Debugger were also used identify and fix memory leaks and unidentified behavior.

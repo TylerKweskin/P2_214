@@ -226,7 +226,8 @@ char** addFromDir(char** names, int* count, char* name, char* ext){
         if(de->d_type == DT_DIR){
             if((int)strcmp((char*)(de->d_name), ".")!=0){
                 if((int)strcmp((char*)(de->d_name), "..")!=0){
-                    char* dirPath = malloc(sizeof(char) * (strlen(name) + strlen(de->d_name) + 1));
+                    char* dirPath = malloc(sizeof(char) * (strlen(name) + strlen(de->d_name) + 1+1));
+                    dirPath[0] = '\0';
                     strcat(dirPath, name);
                     strcat(dirPath, "/");
                     strcat(dirPath, de->d_name);
@@ -239,20 +240,22 @@ char** addFromDir(char** names, int* count, char* name, char* ext){
         }
 
         if(de->d_type == DT_REG && strlen((char*)de->d_name) >= strlen(ext)){
-            char* ninad = malloc(strlen(ext));
-            strncpy(ninad, (char*)de->d_name + strlen((char*)de->d_name) - strlen(ext), strlen(ext));
+            char* ninad = malloc(strlen(ext)+1);
+            strncpy(ninad, (char*)de->d_name + strlen((char*)de->d_name) - strlen(ext), strlen(ext)+1);
             if(strcmp(ninad, ext) == 0){ //Check if it has the correct extension
                 char** temp = realloc(names, sizeof(char*) * (*count + 1));
                 if(temp == NULL) perror("Null pointer on 228");
                 names = temp;
 
-                char* a = malloc(sizeof(char) * (strlen(name) + 1 + strlen((char*)de->d_name)));
+                char* a = malloc(sizeof(char) * (strlen(name) + 1 + strlen((char*)de->d_name)) + 1);
+                a[0] = '\0';
                 strcpy(a, name);
                 strcat(a, "/"); strcat(a, (char*)de->d_name); 
                 names[(*count)] = a;
                 //free(a);
                 (*count)++;
             }
+            free(ninad);
         }
 
 
@@ -281,7 +284,7 @@ int main(int argc, char const *argv[]){
         isFormatSpecified = 1;
     }
 
-    char* fileExtension = ".txt";
+    char* fileExtension;
     char* fileName;
 
 
@@ -291,24 +294,27 @@ int main(int argc, char const *argv[]){
     if(!isFormatSpecified){
         // ./word docs
         //Good to look for txt file extension
-        fileName = malloc(sizeof(char) * strlen(argv[1]));
+        fileExtension = malloc(sizeof(char) * strlen(argv[1])+1);
+        strcpy(fileExtension, ".txt");
+        //fileName = malloc(sizeof(char) * strlen(argv[1]));
         fileName = argv[1];
     } else {
-        fileExtension = malloc(sizeof(char) * strlen(argv[1]));
         if(strlen(argv[1]) == 2){
             // ./words -s .md docs
             //format is specified in argv[2]
-            fileExtension = argv[2];
+            fileExtension = malloc(sizeof(char) * (strlen(argv[2])+1));
+            strcpy(fileExtension,argv[2]);
 
-            fileName = malloc(sizeof(char) * strlen(argv[3]));
+            //fileName = malloc(sizeof(char) * strlen(argv[3]));
             fileName = argv[3];
         } else{
             //format is specifie in argv[1]
             //./words -s.md docs
             
+            fileExtension = malloc(sizeof(char) * strlen(argv[1])-2+1);
             strncpy(fileExtension, argv[1] + 2, strlen(argv[1])-2);
 
-            fileName = malloc(sizeof(char) * strlen(argv[2]));
+            //fileName = malloc(sizeof(char) * strlen(argv[2]));
             fileName = argv[2];
         }
     }
@@ -323,8 +329,8 @@ int main(int argc, char const *argv[]){
 
     int r = stat (fileName, &data);
     if (r < 0) {
-        char* a = malloc(strlen(fileName) * sizeof(char)); strcpy(a, fileName);
-        char* b = malloc(strlen(fileExtension) * sizeof(char)); strcpy(b, fileExtension);
+        char* a = malloc((strlen(fileName)+1) * sizeof(char)); strcpy(a, fileName);
+        char* b = malloc((strlen(fileExtension)+1) * sizeof(char)); strcpy(b, fileExtension);
 
         //printf("a: %s\n", a);
         //printf("b: %s\n", b);
@@ -473,6 +479,12 @@ int main(int argc, char const *argv[]){
             perror("close");
             return 1;
         }
+        free(dynamicFileNameStorage[filesRead]);
     }
+
+    free(dynamicFileNameStorage);
+    free(fileExtension);
+    //free(fileName);
+
     return 0;
 }

@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/words",
-            "args": ["-s", ".md", "tests"],
+            "args": ["-s", ".txt", "tests"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

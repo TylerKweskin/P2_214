@@ -239,7 +239,7 @@ char** addFromDir(char** names, int* count, char* name, char* ext){
             
         }
 
-        if(de->d_type == DT_REG && strlen((char*)de->d_name) >= strlen(ext)){
+        if(de->d_type == DT_REG && strlen((char*)de->d_name) >= strlen(ext) && (char*)de->d_name[0] != '.'){
             char* ninad = malloc(strlen(ext)+1);
             strncpy(ninad, (char*)de->d_name + strlen((char*)de->d_name) - strlen(ext), strlen(ext)+1);
             if(strcmp(ninad, ext) == 0){ //Check if it has the correct extension

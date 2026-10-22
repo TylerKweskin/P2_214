@@ -154,8 +154,8 @@ int finishWord(Word *word, WordTable *table) {
 int printCounts(const WordTable *table) {
     char countText[32];
 
-    for(int i = 0; i < table->length-1; i++){
-        for(int k = 0; k < table->length-1-i; k++){
+    for(size_t i = 0; i < table->length-1; i++){
+        for(size_t k = 0; k < table->length-1-i; k++){
             //strcmp(table->entries[k].text, table->entries[k+1].text)
             if(table->entries[k].count < table->entries[k+1].count){
                 //Swap
@@ -295,7 +295,9 @@ int main(int argc, char const *argv[]){
         // ./word docs
         //Good to look for txt file extension
         fileExtension = malloc(sizeof(char) * strlen(argv[1])+1);
+        size_t strLen =strlen(fileExtension);
         strcpy(fileExtension, ".txt");
+        
         //fileName = malloc(sizeof(char) * strlen(argv[1]));
         fileName = argv[1];
     } else {
@@ -324,7 +326,6 @@ int main(int argc, char const *argv[]){
 
     struct stat data;
 
-
     //printf("fileName: %s\n", fileName);
 
     int r = stat (fileName, &data);
@@ -340,11 +341,9 @@ int main(int argc, char const *argv[]){
             perror(fileName);
             exit(EXIT_FAILURE);
         }
-
         free(a);
         free(b);
     }
-
     //printf("made it through to line 315\n");
 
     //printf("FileName Line 270: %s\n", fileName);
@@ -355,8 +354,14 @@ int main(int argc, char const *argv[]){
         dynamicFileNameStorage = addFromDir(dynamicFileNameStorage, &fileNameCount, fileName, fileExtension);
     } else {
         //there's one penis
-        dynamicFileNameStorage[0] = strcat(fileName,fileExtension);
-        
+        dynamicFileNameStorage[0] = malloc(strlen(fileName)+1);
+
+        if (dynamicFileNameStorage[0] == NULL) {
+            perror("malloc");
+            return 1;
+        }
+
+        strcpy(dynamicFileNameStorage[0], fileName);
         fileNameCount = 1;
         //printf("FileName Line 277: %s\n", fileName);
         //printf("File Storage Line 277: %s\n", dynamicFileNameStorage[0]);
